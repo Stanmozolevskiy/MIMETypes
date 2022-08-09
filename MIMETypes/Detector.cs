@@ -32,33 +32,6 @@ namespace MIMETypes
 			}
 		}
 
-		private static string detect(byte[] content)
-		{
-			ImmutableArray<DefinitionMatch> results = (new ContentInspectorBuilder { Definitions = MimeDetective.Definitions.Default.All() })
-			   .Build().Inspect(content);
-			if (results.Any())
-				return results.ByMimeType().OrderBy(o => o.Points).First().MimeType;
-
-			if (System.Diagnostics.Debugger.Launch())
-				System.Diagnostics.Debugger.Break();
-
-			IntPtr mimeTypePtr = IntPtr.Zero;
-			try
-			{
-				int result = FindMimeFromData(IntPtr.Zero, null, content, content.Length, null, 0, out mimeTypePtr, 0);
-				if (result != 0)
-					throw Marshal.GetExceptionForHR(result);
-
-				string mimeType = Marshal.PtrToStringUni(mimeTypePtr);
-				Marshal.FreeCoTaskMem(mimeTypePtr);
-				return mimeType;
-			}
-			catch
-			{
-				if (mimeTypePtr != IntPtr.Zero)
-					Marshal.FreeCoTaskMem(mimeTypePtr);
-				return "unknown/unknown";
-			}
-		}
+		
 	}
 }
